@@ -9,3 +9,5 @@ data_raw/
 *.pem
 *.key
 .streamlit/secrets.toml
+*.pdf
+screenshots/

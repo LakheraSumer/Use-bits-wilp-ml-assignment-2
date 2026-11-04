@@ -83,7 +83,8 @@ def build_pipelines():
 
 def main():
     df = load_raw_data()
-    assert list(df.columns[: len(PREDICTOR_COLUMNS)]) == PREDICTOR_COLUMNS or True
+    leaked = set(PREDICTOR_COLUMNS) & set(FAULT_COLUMNS)
+    assert not leaked, f"Fault-label columns must not be used as predictors: {leaked}"
 
     X = df[PREDICTOR_COLUMNS]
     y = df[TARGET_COLUMN]
