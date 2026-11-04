@@ -35,7 +35,7 @@ PREDICTOR_COLUMNS = [
 
 TARGET_COLUMN = "Other_Faults"
 POSITIVE_LABEL = 1
-CLASS_NAMES = {0: "Named fault (one of six)", 1: "Other_Faults"}
+CLASS_NAMES = {0: "One of six named faults", 1: "Other fault"}
 
 MODEL_FILES = {
     "Logistic Regression": MODEL_DIR / "logistic_regression.joblib",

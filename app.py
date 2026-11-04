@@ -15,6 +15,7 @@ import streamlit as st
 from sklearn.metrics import confusion_matrix
 
 from model.common import (
+    CLASS_NAMES,
     MODEL_FILES,
     PREDICTOR_COLUMNS,
     TARGET_COLUMN,
@@ -55,8 +56,7 @@ pipelines = load_pipelines()
 
 st.title("Steel Plates Fault Classifier")
 st.caption(
-    "Predicting whether a steel plate's fault is **Other_Faults (1)** or one of the "
-    "six named fault types (0), from 27 optical-inspection measurements. "
+    "0 = One of six named faults · 1 = Other fault. "
     "Dataset: [UCI Steel Plates Faults](https://archive.ics.uci.edu/dataset/198/steel+plates+faults)."
 )
 
@@ -118,8 +118,8 @@ y_pred_active = pipelines[model_name].predict(X_active)
 cm = confusion_matrix(y_active, y_pred_active, labels=[0, 1])
 cm_df = pd.DataFrame(
     cm,
-    index=pd.MultiIndex.from_product([["Actual"], ["0: Named fault", "1: Other_Faults"]]),
-    columns=pd.MultiIndex.from_product([["Predicted"], ["0: Named fault", "1: Other_Faults"]]),
+    index=pd.MultiIndex.from_product([["Actual"], [f"0: {CLASS_NAMES[0]}", f"1: {CLASS_NAMES[1]}"]]),
+    columns=pd.MultiIndex.from_product([["Predicted"], [f"0: {CLASS_NAMES[0]}", f"1: {CLASS_NAMES[1]}"]]),
 )
 st.write("Confusion matrix")
 st.dataframe(cm_df, width="content")
