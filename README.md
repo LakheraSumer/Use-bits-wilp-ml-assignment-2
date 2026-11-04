@@ -65,7 +65,7 @@ Primary metric: **MCC** (Matthews Correlation Coefficient) — chosen because it
 
 ## Live app
 
-Streamlit Community Cloud: *link added after deployment (Milestone 7)*
+Streamlit Community Cloud: <https://bits-wilp-ml-assignment-2-sumer.streamlit.app/> — public, no sign-in required.
 
 ## Setup, training, and launching
 
