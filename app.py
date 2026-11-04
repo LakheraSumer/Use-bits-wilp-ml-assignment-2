@@ -122,13 +122,13 @@ cm_df = pd.DataFrame(
     columns=pd.MultiIndex.from_product([["Predicted"], ["0: Named fault", "1: Other_Faults"]]),
 )
 st.write("Confusion matrix")
-st.dataframe(cm_df, use_container_width=False)
+st.dataframe(cm_df, width="content")
 
 # --- Comparison table across all five models ---
 st.subheader("Comparison across all five models (active data)")
 comparison_df = pd.DataFrame(all_results).T
 comparison_df.index.name = "ML Model Name"
-st.dataframe(comparison_df, use_container_width=True)
+st.dataframe(comparison_df, width="stretch")
 
 st.caption(
     "AUC shows as NaN/N/A when the active data contains only one class, "
