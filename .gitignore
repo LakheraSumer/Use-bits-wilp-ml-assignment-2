@@ -1,0 +1,11 @@
+.venv/
+.claude/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+data_raw/
+*.env
+.env
+*.pem
+*.key
+.streamlit/secrets.toml
