@@ -112,8 +112,5 @@ the default (no-upload) view, since it's the same held-out data the app loads by
 
 ## AI-assistance disclosure
 
-An AI coding assistant (Claude) was used to scaffold the training script, the Streamlit app, and an
-initial README/metrics draft, and to run verification checks (unrounded metric recomputation,
-confusion-matrix counts, data-leakage and AUC-orientation checks, upload-validation tests). The
-student trained and deployed the models on the BITS Virtual Lab VM, reviewed all code and results,
-and approved the Problem Statement and Table 2 observations above for submission.
+An AI coding assistant (Claude) helped draft the code, app, and this README. The student trained and
+deployed the models on the BITS Virtual Lab VM and reviewed all content before submission.
