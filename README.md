@@ -116,9 +116,11 @@ because both use the same held-out rows.
 
 ## AI-assistance disclosure
 
-AI coding assistants (Claude and OpenAI Codex) were used to help generate and revise parts of the
-training code, Streamlit app, verification scripts, README, and submission-document formatting, and to
-run consistency checks. The student ran the work in the BITS Virtual Lab, trained and deployed the
-models, checked the reported outputs, and remains responsible for understanding and submitting the
-work. Because the assignment permits AI only for learning support and not direct copy-paste submission,
-the acceptability of this workflow should be confirmed with the instructor before submission.
+AI coding assistants (Claude and OpenAI Codex) were used during the project to explain concepts,
+identify errors, suggest and revise portions of code and documentation, and support consistency checks.
+The student selected the dataset and problem framing, performed the assignment in the BITS Virtual Lab,
+ran the model training and evaluation, reviewed the code and results, deployed and tested the Streamlit
+app, captured the lab evidence, and made the final submission decisions. The student remains responsible
+for understanding the submitted work and for its accuracy and originality. Because the assignment permits
+AI only for learning support and not direct copy-paste submission, the student should confirm with the
+instructor that this level of assistance is permitted.
