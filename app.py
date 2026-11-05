@@ -96,16 +96,8 @@ st.caption(
     unsafe_allow_html=True,
 )
 
-with st.expander("New here? How to use this app", expanded=True):
-    st.markdown(
-        "1. This page already shows results on the **bundled held-out test set** (389 rows) — nothing to click to get started.\n"
-        "2. **Selected model** tab (below): pick any of the five models from the dropdown to see its six metrics "
-        "and confusion matrix.\n"
-        "3. **Compare all five models** tab: see all five side by side on the same data, with the **best score per "
-        "metric highlighted in green**.\n"
-        "4. To test with your own labeled data: use **Download sample test_data.csv** in the sidebar to see the "
-        "expected format, then **Upload labeled test CSV** there. Both tabs update together."
-    )
+if "tour_dismissed" not in st.session_state:
+    st.session_state.tour_dismissed = False
 
 # --- Sidebar: data source ---
 with st.sidebar:
@@ -116,13 +108,17 @@ with st.sidebar:
         file_name="test_data.csv",
         mime="text/csv",
         width="stretch",
+        help="Downloads the exact held-out CSV this app loads by default, so you can see the expected columns.",
     )
     st.caption(
         "Upload a CSV with the same 27 predictor columns (any order) plus the "
         f"`{TARGET_COLUMN}` column (0 or 1). Missing columns, non-numeric values, "
         "or invalid labels are reported as an error."
     )
-    uploaded_file = st.file_uploader("Upload labeled test CSV", type=["csv"])
+    uploaded_file = st.file_uploader(
+        "Upload labeled test CSV", type=["csv"],
+        help="Both tabs below update together to reflect this file once uploaded.",
+    )
 
 if uploaded_file is not None:
     try:
@@ -153,10 +149,23 @@ with st.container(border=True):
 
 all_results = evaluate_all_models(pipelines, active_df)
 
+if not st.session_state.tour_dismissed:
+    tip_col, btn_col = st.columns([8, 1])
+    tip_col.info(
+        "**New here?** The tab below shows one model at a time — switch to **Compare all five models** "
+        "to see every model side by side, with the best score per metric highlighted."
+    )
+    if btn_col.button("Got it", width="stretch"):
+        st.session_state.tour_dismissed = True
+        st.rerun()
+
 tab_single, tab_compare = st.tabs(["Selected model", "Compare all five models"])
 
 with tab_single:
-    model_name = st.selectbox("Select a model", list(pipelines.keys()))
+    model_name = st.selectbox(
+        "Select a model", list(pipelines.keys()),
+        help="Results below (metrics + confusion matrix) update for whichever model you pick here.",
+    )
     selected_metrics = all_results[model_name]
 
     metric_row1 = st.columns(3)
