@@ -10,4 +10,5 @@ data_raw/
 *.key
 .streamlit/secrets.toml
 *.pdf
+*.docx
 screenshots/
