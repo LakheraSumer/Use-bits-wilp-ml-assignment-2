@@ -109,3 +109,11 @@ the default (no-upload) view, since it's the same held-out data the app loads by
 ./.venv/Scripts/python.exe model/verify_reload.py          # reloads saved pipelines, checks all 30 metric values match training exactly
 ./.venv/Scripts/python.exe model/test_upload_scenarios.py  # exercises reordered/valid-subset/single-class/invalid upload handling
 ```
+
+## AI-assistance disclosure
+
+An AI coding assistant (Claude) was used to scaffold the training script, the Streamlit app, and an
+initial README/metrics draft, and to run verification checks (unrounded metric recomputation,
+confusion-matrix counts, data-leakage and AUC-orientation checks, upload-validation tests). The
+student trained and deployed the models on the BITS Virtual Lab VM, reviewed all code and results,
+and approved the Problem Statement and Table 2 observations above for submission.
