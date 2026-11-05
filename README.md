@@ -1,34 +1,35 @@
 # Use-bits-wilp-ml-assignment-2
 
 **Student:** Sumer Lakhera | **BITS ID:** 2025NS04051 | **Programme:** M.Tech (DSE), BITS Pilani WILP
-**Course:** Machine Learning — Assignment 2 (classification models and Streamlit deployment)
+
+**Course:** Machine Learning - Assignment 2 (classification models and Streamlit deployment)
 
 ## a. Problem statement
 
-> *Draft below — please read and personalize before submission; it should reflect your own understanding.*
+Every row in this dataset represents a steel plate fault that has already been detected. The task is
+binary classification, not fault detection:
 
-An automated optical inspection system on a steel production line scans every plate and records 27
-measurements about each detected fault: its location and size on the plate, its perimeter, its
-luminosity, the steel type, and several derived shape/edge indices. The system already recognizes
-six specific, well-understood fault types (Pastry, Z_Scratch, K_Scatch, Stains, Dirtiness, Bumps).
-This project asks: **can these 27 measurements alone tell apart the six known fault types from
-"Other_Faults" — defects that don't fit any established category?**
+- Positive class `1` means `Other_Faults`.
+- Negative class `0` means one of the six named fault types: `Pastry`, `Z_Scratch`, `K_Scatch`,
+  `Stains`, `Dirtiness`, or `Bumps`.
+- The models use the 27 measurement features recorded for each fault.
+- All seven fault-label columns are excluded from the model inputs. `Other_Faults` is used only as
+  the target, and the other six label columns are not used as predictors.
 
-This matters operationally because `Other_Faults` plates are exactly the ones that most likely need
-a human inspector's judgement; a model that reliably flags them lets quality-control staff focus
-their attention where automatic classification doesn't already help, while plates with well-understood
-faults keep moving through the existing automated routing.
+The experiment tests whether the 27 measurements can separate `Other_Faults` from the six named
+fault types. A possible application would be to use the prediction to help prioritize cases for human
+review. However, this dataset and experiment do not establish which plates actually require human
+inspection or how predictions should be used in a production quality-control process.
 
 ## b. Dataset description
 
-- **Source:** [UCI Machine Learning Repository — Steel Plates Faults (ID 198)](https://archive.ics.uci.edu/dataset/198/steel+plates+faults), CC BY 4.0, Buscema, Terzi & Tastle (2010).
-- **Rows:** 1,941 steel plate fault records (verified by direct download and inspection), 0 missing values, 0 duplicate rows.
-- **Predictors:** 27 genuine numeric measurement columns (bounding-box coordinates, pixel area, perimeter, luminosity statistics, steel type indicators, plate thickness, and derived geometric/luminosity indices). No identifier columns are used as predictors.
-- **Target:** `Other_Faults` (binary). The original dataset encodes seven mutually-exclusive one-hot fault columns (`Pastry`, `Z_Scratch`, `K_Scatch`, `Stains`, `Dirtiness`, `Bumps`, `Other_Faults`); we use `Other_Faults` as the target and **exclude all seven fault-label columns from the model inputs** to prevent leakage.
-- **Class distribution:** 673 `Other_Faults` (34.7%) vs. 1,268 named-fault plates (65.3%) — mild imbalance.
-- **Missing values / duplicates:** none.
-- **Split:** stratified 80/20 train/test split, fixed `random_state=42` (no repeated entities or time ordering in this dataset that would require a different split strategy). Train: 1,552 rows (538 positive). Test: 389 rows (135 positive), saved verbatim as [`test_data.csv`](test_data.csv) with the original predictor names and the `Other_Faults` target column.
-- **Preprocessing:** `StandardScaler` inside the pipeline for the three models sensitive to feature scale (Logistic Regression, KNN, SVM); Decision Tree and Naive Bayes use the raw measurements directly. All preprocessing is fit on the training split only.
+- **Source:** [UCI Machine Learning Repository - Steel Plates Faults (ID 198)](https://archive.ics.uci.edu/dataset/198/steel+plates+faults), CC BY 4.0, Buscema, Terzi & Tastle (2010).
+- **Rows:** 1,941 steel plate fault records, 0 missing values, and 0 duplicate rows.
+- **Predictors:** 27 numeric measurement columns covering bounding-box coordinates, pixel area, perimeter, luminosity statistics, steel type indicators, plate thickness, and derived geometric/luminosity indices. No identifier or fault-label column is used as a predictor.
+- **Target:** `Other_Faults` (binary). The original data has seven mutually exclusive one-hot label columns: `Pastry`, `Z_Scratch`, `K_Scatch`, `Stains`, `Dirtiness`, `Bumps`, and `Other_Faults`.
+- **Class distribution:** 673 `Other_Faults` records (34.7%) and 1,268 named-fault records (65.3%).
+- **Split:** stratified 80/20 train/test split with `random_state=42`. Training has 1,552 rows (538 positive); testing has 389 rows (135 positive). The same held-out rows are saved as [`test_data.csv`](test_data.csv) and used for every model.
+- **Preprocessing:** `StandardScaler` is inside the Logistic Regression, KNN, and SVM pipelines. Decision Tree and Gaussian Naive Bayes use the raw measurements. Each scaler and model is fit only on the training split.
 
 ## c. GitHub repository link
 
@@ -36,38 +37,40 @@ faults keep moving through the existing automated routing.
 
 ## d. Models used
 
-All five models share the same stratified 80/20 split and the same held-out `test_data.csv`, evaluated with one shared metrics function (`model/common.py`) used by both training and the Streamlit app. Positive class = `Other_Faults` (1).
+All five saved pipelines are evaluated on the same 389-row held-out `test_data.csv`. Training and the
+Streamlit app use the shared metric implementation in `model/common.py`. The positive class for
+Precision, Recall, F1, MCC, and AUC is `Other_Faults = 1`.
 
-**Table 1 — Metrics (held-out test set, 389 rows)**
+**Table 1 - Metrics (held-out test set, 389 rows)**
 
 | ML Model Name | Accuracy | AUC | Precision | Recall | F1 | MCC |
-|---|---|---|---|---|---|---|
+|---|---:|---:|---:|---:|---:|---:|
 | Logistic Regression | 0.7198 | 0.7623 | 0.6667 | 0.3852 | 0.4883 | 0.3363 |
-| Decision Tree | 0.7661 | 0.7393 | 0.6667 | 0.6519 | 0.6592 | 0.4812 |
-| K-Nearest Neighbors | 0.7815 | 0.8189 | 0.7273 | 0.5926 | 0.6531 | **0.5015** |
-| Naive Bayes (Gaussian) | 0.5116 | 0.6838 | 0.4121 | 0.9556 | 0.5759 | 0.2775 |
-| Support Vector Machine | 0.7661 | 0.7971 | 0.7391 | 0.5037 | 0.5991 | 0.4584 |
+| Decision Tree | 0.7661 | 0.7393 | 0.6667 | 0.6519 | **0.6592** | 0.4812 |
+| K-Nearest Neighbors | **0.7815** | **0.8189** | 0.7273 | 0.5926 | 0.6531 | **0.5015** |
+| Naive Bayes (Gaussian) | 0.5116 | 0.6838 | 0.4121 | **0.9556** | 0.5759 | 0.2775 |
+| Support Vector Machine | 0.7661 | 0.7971 | **0.7391** | 0.5037 | 0.5991 | 0.4584 |
 
-Primary metric: **MCC** (Matthews Correlation Coefficient) — chosen because it uses all four confusion-matrix cells and stays reliable under the dataset's mild class imbalance (65/35), unlike plain Accuracy.
+Primary metric: **MCC** (Matthews Correlation Coefficient). It uses all four confusion-matrix cells,
+which makes it more informative than Accuracy alone for this 65/35 class distribution.
 
-**Table 2 — Observations**
+**Table 2 - Observations**
 
-> *Draft below — please read, verify against your own run of the app, and rewrite in your own words before submission.*
-
-All counts below are from the same 389-row held-out set: 135 plates are truly `Other_Faults`, 254 are truly one of the six named fault types.
+All counts below are from the same 389-row held-out set: 135 records are `Other_Faults` and 254 are
+one of the six named fault types.
 
 | ML Model Name | Observation about model performance |
 |---|---|
-| Logistic Regression | Caught 52 of 135 true `Other_Faults` plates and missed 83 (Recall 0.3852); raised 26 false alarms on the 254 named-fault plates (Precision 0.6667). Lowest MCC of the five (0.3363). *Likely reason: Logistic Regression can only draw one linear boundary through the 27 measurements, which may be too simple to separate the classes well here — this is a plausible explanation, not something directly measured.* |
-| Decision Tree | Caught 88 of 135, missed 47 (Recall 0.6519); 44 false alarms out of 254 (Precision 0.6667) — the closest Precision/Recall balance of any model. Second-highest MCC (0.4812) and the **highest F1** of all five (0.6592). *Note: trained with no depth limit, so some of this held-out performance may not generalize as well as a pruned/tuned tree would.* |
-| K-Nearest Neighbors | Caught 80 of 135, missed 55 (Recall 0.5926); only 30 false alarms out of 254 (Precision 0.7273). **Highest MCC (0.5015), highest Accuracy (0.7815) and highest AUC (0.8189)** of the five — but not the top model on every metric (see Decision Tree's F1 and SVM's Precision above/below). |
-| Naive Bayes (Gaussian) | Caught 129 of 135 — only 6 missed, by far the **highest Recall (0.9556)** — but raised 184 false alarms out of 254 named-fault plates (72.4% of them), giving the lowest Precision (0.4121), lowest Accuracy (0.5116, worse than always predicting the majority class) and lowest MCC (0.2775). *Likely reason: Gaussian Naive Bayes assumes the 27 features are independent given the class; several are mathematically derived from each other (e.g. `LogOfAreas` is a log of `Pixels_Areas`), which breaks that assumption — a plausible explanation, not something directly measured.* |
-| Support Vector Machine | Caught 68 of 135, missed 67 (Recall 0.5037); only 24 false alarms out of 254 — the **fewest of any model**, giving the **highest Precision (0.7391)**. Third-highest MCC (0.4584). |
-| **Overall winner for this dataset** | **K-Nearest Neighbors**, by the primary metric (MCC = 0.5015, highest of the five). It also leads Accuracy and AUC, but **not** every metric: Decision Tree has the higher F1 (0.6592 vs 0.6531), Support Vector Machine has the higher Precision (0.7391), and Naive Bayes has the higher Recall (0.9556). MCC was chosen as primary because it uses all four confusion-matrix counts and stays reliable under this dataset's mild class imbalance (65/35) — by that measure, KNN wins. |
+| Logistic Regression | Correctly identified 52 of 135 `Other_Faults` records and missed 83 (Recall 0.3852). It produced 26 false positives among the 254 named-fault records (Precision 0.6667). Its MCC is 0.3363, the **fourth-highest of the five models**, ahead of Gaussian Naive Bayes. A possible explanation for the lower score is that a linear decision boundary may not describe the class separation well; this explanation was not directly tested. |
+| Decision Tree | Correctly identified 88 of 135 `Other_Faults` records and missed 47 (Recall 0.6519). It produced 44 false positives (Precision 0.6667). It has the second-highest MCC (0.4812) and the **highest F1 (0.6592)**. The tree was trained without a depth limit, so its performance should not be treated as evidence that an untuned tree will generalize equally well to new operational data. |
+| K-Nearest Neighbors | Correctly identified 80 of 135 `Other_Faults` records and missed 55 (Recall 0.5926). It produced 30 false positives (Precision 0.7273). It has the **highest MCC (0.5015), Accuracy (0.7815), and AUC (0.8189)**. It does not lead every metric: Decision Tree has the highest F1, SVM has the highest Precision, and Gaussian Naive Bayes has the highest Recall. |
+| Naive Bayes (Gaussian) | Correctly identified 129 of 135 `Other_Faults` records and missed only 6, giving the **highest Recall (0.9556)**. It also produced 184 false positives among 254 named-fault records, so it has the lowest Precision (0.4121), Accuracy (0.5116), and **MCC (0.2775)**. A possible explanation is that Gaussian Naive Bayes assumes conditional feature independence while several measurements are mathematically related; this explanation was not directly tested. |
+| Support Vector Machine | Correctly identified 68 of 135 `Other_Faults` records and missed 67 (Recall 0.5037). It produced 24 false positives, the fewest of the five models, and therefore has the **highest Precision (0.7391)**. Its MCC (0.4584) is third-highest. |
+| **Overall winner for this dataset** | **K-Nearest Neighbors**, using MCC as the primary metric. Its MCC is 0.5015, the highest of the five, and it also leads Accuracy and AUC. Decision Tree leads F1, SVM leads Precision, and Gaussian Naive Bayes leads Recall. |
 
 ## Live app
 
-Streamlit Community Cloud: <https://bits-wilp-ml-assignment-2-sumer.streamlit.app/> — public, no sign-in required.
+Streamlit Community Cloud: <https://bits-wilp-ml-assignment-2-sumer.streamlit.app/> - public, no sign-in required.
 
 ## Setup, training, and launching
 
@@ -79,19 +82,19 @@ python -m venv .venv
 ./.venv/Scripts/python.exe -m pip install -r requirements.txt
 ```
 
-### 2. Training (optional — the repository already ships five fitted pipelines and `test_data.csv`)
+### 2. Training (optional - the repository already contains five fitted pipelines and `test_data.csv`)
 
-Only needed if you want to retrain from scratch. Download `Faults.NNA` and `Faults27x7_var` from the
+Download `Faults.NNA` and `Faults27x7_var` from the
 [UCI Steel Plates Faults page](https://archive.ics.uci.edu/dataset/198/steel+plates+faults) into a
-`data_raw/` folder at the project root, then:
+`data_raw/` folder at the project root, then run:
 
 ```bash
 ./.venv/Scripts/python.exe model/train.py
 ```
 
-This rewrites `test_data.csv` and all five `model/*.joblib` pipelines.
+This rewrites `test_data.csv`, `model/training_metrics.csv`, and the five `model/*.joblib` pipelines.
 
-### 3. Launch the app (one command, handles a path with spaces, no manual activation needed)
+### 3. Launch the app
 
 ```bash
 ./.venv/Scripts/streamlit.exe run app.py
@@ -99,18 +102,23 @@ This rewrites `test_data.csv` and all five `model/*.joblib` pipelines.
 
 ### 4. Testing with the sample CSV
 
-Open the app, use the **Download sample test_data.csv** button in the sidebar, then re-upload that
-same file via **Upload labeled test CSV** — the metrics and confusion matrix should be identical to
-the default (no-upload) view, since it's the same held-out data the app loads by default.
+Open the app, use **Download sample test_data.csv** in the sidebar, and upload that same file through
+**Upload labeled test CSV**. The metrics and confusion matrix should be identical to the default view
+because both use the same held-out rows.
 
 ### 5. Verification scripts
 
 ```bash
-./.venv/Scripts/python.exe model/verify_reload.py          # reloads saved pipelines, checks all 30 metric values match training exactly
-./.venv/Scripts/python.exe model/test_upload_scenarios.py  # exercises reordered/valid-subset/single-class/invalid upload handling
+./.venv/Scripts/python.exe model/verify_reload.py
+./.venv/Scripts/python.exe model/verify_integrity.py
+./.venv/Scripts/python.exe model/test_upload_scenarios.py
 ```
 
 ## AI-assistance disclosure
 
-An AI coding assistant (Claude) helped draft the code, app, and this README. The student trained and
-deployed the models on the BITS Virtual Lab VM and reviewed all content before submission.
+AI coding assistants (Claude and OpenAI Codex) were used to help generate and revise parts of the
+training code, Streamlit app, verification scripts, README, and submission-document formatting, and to
+run consistency checks. The student ran the work in the BITS Virtual Lab, trained and deployed the
+models, checked the reported outputs, and remains responsible for understanding and submitting the
+work. Because the assignment permits AI only for learning support and not direct copy-paste submission,
+the acceptability of this workflow should be confirmed with the instructor before submission.

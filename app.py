@@ -95,6 +95,11 @@ st.caption(
     "Dataset: [UCI Steel Plates Faults](https://archive.ics.uci.edu/dataset/198/steel+plates+faults).",
     unsafe_allow_html=True,
 )
+st.caption(
+    "Each row is an already-detected plate fault. The models use 27 measurements to classify it as "
+    "Other_Faults (1) or one of the six named fault types (0). Human review is a possible application, "
+    "not an operational conclusion established by this experiment."
+)
 
 if "tour_dismissed" not in st.session_state:
     st.session_state.tour_dismissed = False

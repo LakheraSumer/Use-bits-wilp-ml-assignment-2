@@ -48,11 +48,21 @@ MODEL_FILES = {
 
 def get_positive_score(pipeline, X):
     """Probability (or decision score) assigned to the positive class (Other_Faults=1)."""
+    classes = list(pipeline.classes_)
+    if POSITIVE_LABEL not in classes:
+        raise ValueError(f"Positive label {POSITIVE_LABEL} is not present in model classes: {classes}")
+
     if hasattr(pipeline, "predict_proba"):
-        classes = list(pipeline.classes_)
         idx = classes.index(POSITIVE_LABEL)
         return pipeline.predict_proba(X)[:, idx]
-    return pipeline.decision_function(X)
+
+    scores = pipeline.decision_function(X)
+    if len(classes) != 2:
+        raise ValueError("A one-dimensional decision score is only supported for binary classification.")
+
+    # scikit-learn binary decision_function scores are oriented toward classes_[1].
+    # Reverse them if the requested positive class is classes_[0].
+    return scores if classes[1] == POSITIVE_LABEL else -scores
 
 
 def compute_metrics(y_true, y_pred, y_score=None):
