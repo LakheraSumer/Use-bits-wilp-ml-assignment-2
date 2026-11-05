@@ -68,6 +68,17 @@ one of the six named fault types.
 | Support Vector Machine | Correctly identified 68 of 135 `Other_Faults` records and missed 67 (Recall 0.5037). It produced 24 false positives, the fewest of the five models, and therefore has the **highest Precision (0.7391)**. Its MCC (0.4584) is third-highest. |
 | **Overall winner for this dataset** | **K-Nearest Neighbors**, using MCC as the primary metric. Its MCC is 0.5015, the highest of the five, and it also leads Accuracy and AUC. Decision Tree leads F1, SVM leads Precision, and Gaussian Naive Bayes leads Recall. |
 
+## Conclusion
+
+Five classification models were compared on the same stratified held-out test set using Accuracy, AUC,
+Precision, Recall, F1, and MCC. K-Nearest Neighbors is the overall winner for this experiment because it
+has the highest MCC (0.5015), Accuracy (0.7815), and AUC (0.8189). No single model is best for every
+objective: Decision Tree has the highest F1, Support Vector Machine has the highest Precision, and
+Gaussian Naive Bayes has the highest Recall. This shows that the preferred model depends on the relative
+cost of false positives and false negatives. These results apply to this held-out split and do not by
+themselves establish production performance or a human-review policy; further tuning and validation on
+new data would be needed before operational use.
+
 ## Live app
 
 Streamlit Community Cloud: <https://bits-wilp-ml-assignment-2-sumer.streamlit.app/> - public, no sign-in required.
