@@ -96,6 +96,17 @@ st.caption(
     unsafe_allow_html=True,
 )
 
+with st.expander("New here? How to use this app", expanded=True):
+    st.markdown(
+        "1. This page already shows results on the **bundled held-out test set** (389 rows) — nothing to click to get started.\n"
+        "2. **Selected model** tab (below): pick any of the five models from the dropdown to see its six metrics "
+        "and confusion matrix.\n"
+        "3. **Compare all five models** tab: see all five side by side on the same data, with the **best score per "
+        "metric highlighted in green**.\n"
+        "4. To test with your own labeled data: use **Download sample test_data.csv** in the sidebar to see the "
+        "expected format, then **Upload labeled test CSV** there. Both tabs update together."
+    )
+
 # --- Sidebar: data source ---
 with st.sidebar:
     st.header("Evaluation data")
